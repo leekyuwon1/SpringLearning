@@ -22,7 +22,7 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * @Autowired : 1. 타입으로 매칭.
-     *              2. 필드 명 ( 생성자의 파라미터 명 혹은
+     *              2. 필드 명 또는 파라미터 명
      */
 
 
