@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 // 수동으로 빈으로 등록.
+
 @Configuration
 public class DiscountPolicyConfig {
 
