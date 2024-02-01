@@ -1,6 +1,9 @@
 package lifecycle;
 
 
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+
 public class NetworkClient {
     private String url;
 
@@ -28,6 +31,7 @@ public class NetworkClient {
     }
 
 
+    @PostConstruct
     public void init() { // Spring이 DI 하고난 뒤에 콜백을 해준다
         System.out.println("NetworkClient.init");
         connect();
@@ -35,6 +39,7 @@ public class NetworkClient {
     }
 
 
+    @PreDestroy
     public void close() { // Bean이 종료될 때 호출된다.
         System.out.println("NetworkClient.close");
         disconnect();
