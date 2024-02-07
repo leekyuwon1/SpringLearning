@@ -3,6 +3,7 @@ package scope;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -48,12 +49,14 @@ public class SingletonWithPrototypeTest1 {
 //            this.prototypeBean = prototypeBean;
 //        }
 
-        @Autowired
-        ApplicationContext applicationContext;
+        private ObjectProvider<PrototypeBean> prototypeBeanObjectProvider;
 
+        public ClientBean(ObjectProvider<PrototypeBean> prototypeBeanObjectProvider) {
+            this.prototypeBeanObjectProvider = prototypeBeanObjectProvider;
+        }
 
         public int logic() {
-            PrototypeBean prototypeBean = applicationContext.getBean(PrototypeBean.class);
+            PrototypeBean prototypeBean = prototypeBeanObjectProvider.getObject();
             prototypeBean.addCount();
             return prototypeBean.getCount();
 

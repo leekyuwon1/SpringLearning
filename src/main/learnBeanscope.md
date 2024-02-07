@@ -8,20 +8,71 @@
 ___스프링은 다음과 같은 다양한 스코프를 지원한다.___
 * 싱글톤( Default ) : 기본 스코프, 스프링 컨테이너의 시작과 종료까지 유지되는 가장 넓은 범위의 스코프.
 * 프로토타입 : 스프링 컨테이너는 프로토타입 빈의 생성과 의존관계 주입까지만 관여하고 더는 관리하지 않는 매우 짧은 범위의 스코프.<br>
-> **프로토타입 빈 라이프사이클** 
-<br>1번 클라이언트 ( prototypeBean 요청 ) → 스프링 DI 컨테이너 ( 새로운 빈 생성 + DI ) → 1번 클라이언트( prototypeBean 반환 )<br>
-> 2번 클라이언트 ( prototypeBean 요청 ) → 스프링 DI 컨테이너 ( 새로운 빈 생성 + DI ) → 2번 클라이언트 ( prototypeBean 반환 )
+  >**_참고_** <br>프로토타입을 사용 예 : 
+  > 별도의 클래스를 직접 만들게 된다면 의존관계 주입도 직접 다 해주어야 된다. 의존관계 주입이 완료된 객체를 생성해서 받고 싶을 때 프로토타입을 사용하면 된다.
+
+* 웹 관련 스코프
+* `request` : 웹 요청이 들어오고 나갈때 까지 유지되는 스코프.
+* `session` : 웹 세션이 생성되고 종료될 때까지 유지되는 스코프.
+* `application` : 웹의 서블릿 컨텍스와 같은 범위로 유지되는 스코프.
+
 <br>
-> 
->**특징**
+
+### _프로토타입 빈_
+* * *
+
+**<U>_프로토타입 빈 라이프사이클_</U>** 
+> 1번 클라이언트 ( prototypeBean 요청 ) → 스프링 DI 컨테이너 ( 새로운 빈 생성 + DI ) → 1번 클라이언트( prototypeBean 반환 )<br>
+> 2번 클라이언트 ( prototypeBean 요청 ) → 스프링 DI 컨테이너 ( 새로운 빈 생성 + DI ) → 2번 클라이언트 ( prototypeBean 반환 )
+
+<br>
+
+**<U>_특징_</U>**
 > * 스프링 컨테이너에 요청할 때 마다 **새로 생성**된다.
 > * 스프링 컨테이너는 프로토타입 빈의 생성과 의존관계 주입 그리고 초기화까지만 관여한다.
 >   * 스프링 DI 컨테이너 생성된 빈을 반환하면 **빈 관리를 하지 못한다**.
 > * 종료 메서드가 호출 되지 않는다. ( `@PreDestory` 애너테이션을 사용하지 못한다. )
 > * **프로토타입 빈은 클라이언트가 관리 해야한다**. 
 > * **종료 메서드에 대한 호출도 클라이언트가 직접 해야한다**.
- 
-* 웹 관련 스코프
-  * `request` : 웹 요청이 들어오고 나갈때 까지 유지되는 스코프.
-  * `session` : 웹 세션이 생성되고 종료될 때까지 유지되는 스코프.
-  * `application` : 웹의 서블릿 컨텍스와 같은 범위로 유지되는 스코프.
+
+<br>
+
+**<U>_싱글톤과 프로토타입을 함께 사용시 문제점._</U>**
+> * 싱글톤 빈에서 프로토타입 빈을 의존성 주입하는 코드 
+> ```java
+> @Scope("singleton")
+> static class ClientBean {
+>   private final PrototypeBean prototypeBean; // 생성 시점에 주입이 되어 있다.
+>
+>   @Autowired
+>   public ClientBean(PrototypeBean prototypeBean) {
+>       this.prototypeBean = prototypeBean;
+>   }
+> }
+>  ```
+> 이처럼 `ClientBean` 싱글톤 빈이지만, `prototypeBean은` 프로토타입 빈이다. 이렇게 하게 될 시, `prototype` 은 생성 시점에 DI가 주입되어 싱글톤으로 주입이 된다.<br><br>
+> 프로토타입의 빈이 의도대로 동작하지 않는 문제점을 발견하였다. <br><br>
+> 어떻게하면 싱글톤에서 프로토타입을 유지하며 매번 새로운 빈을 꺼낼 수 있을까?<br><br>
+> * 핵심코드 변경
+> ```java
+> @Scope("singleton")
+> static class ClientBean{
+>   @Autowired
+>   ApplicationContext applicationContext;
+>   
+>   public int logic(){
+>       PrototypeBean prototypeBean = applicationContext.getBean(PrototypeBean.class);
+>       prototypeBean.addCount();
+>       return prototypeBean.getCount();
+>   }
+> }
+> ```
+> 결과는 싱글톤에서 프로토타입 빈을 매번 새로 생성되는것을 확인할 수 있다.<br><br>
+> 의존관계를 외부에서 주입( DI )받는 형식이 아니라 이렇게 직접 필요한 의존관계를 찾는 것을 **_Dependency Lookup(DL)_** 의존관계 조회(탐색)이라 한다.<br><br>
+> 하지만 이렇게 스프링의 애플리케이션 컨텍스트 전체를 주입받게 된다면 
+> * 스프링 컨테이너에 종속적인 코드가 된다.
+> * 단위 테스트도 어려워진다.
+
+
+**<U>_싱글톤 빈과 함께 사용시 Provider로 문제 해결._</U>** 
+
