@@ -77,17 +77,17 @@ ___스프링은 다음과 같은 다양한 스코프를 지원한다.___
 **<U>_싱글톤 빈과 함께 사용시 Provider_</U>**
 * * *
 
-> `ObjectFactory`, `ObjectProvider` 지정한 빈을 컨테이너에서 대신 찾아주는 DL 서비스를 제공.<br>
-> 스프링이 제공하는 기능을 사용하지만, 기능이 단순하므로 단위테스트, Mock 코드를 만들기 훨씬 쉽다.<br>
-> 과거에는 `ObjectFactory`를 사용했으나, 편의기능을 추가한 `ObjectProvider` 나오게 되었다.<br>
+> `ObjectFactory`, `ObjectProvider` 지정한 빈을 컨테이너에서 대신 찾아주는 DL 서비스를 제공한다.<br>
+> 참고로, 과거에는 `ObjectFactory`를 사용했으나, 편의기능을 추가한 `ObjectProvider` 나오게 되었다.<br>
+> 장점은 스프링이 제공하는 기능을 사용하지만, 기능이 단순하므로 단위테스트, Mock 코드를 만들기 훨씬 쉽다.<br>
 
 >**<U>_특징_</U>**
->* `ObjectFactory`
->  * 단순하게 `getObject` 하나만 제공한다.
->  * 별도의 라이브러리 필요 없다.
->  * 스프링에 의존
->* `ObjectProvider`
->  * `ObjectFactory` 상속하고있다.
->  * `Optional`, `Stream` 처리 등 편의 기능이 많다
->  * 별도의 라이브러리 필요 없다.
->  * 스프링에 의존
+> * `ObjectFactory`
+>   * 단순하게 `getObject` 하나만 제공한다.
+>   * 별도의 라이브러리 필요 없다.
+>   * 스프링에 의존
+> * `ObjectProvider`
+>   * `ObjectFactory` 상속하고있다.
+>   * `Optional`, `Stream` 처리 등 편의 기능이 많다
+>   * 별도의 라이브러리 필요 없다.
+>   * 스프링에 의존
