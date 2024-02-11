@@ -23,6 +23,7 @@ repositories {
 }
 
 dependencies {
+	implementation 'javax.inject:javax.inject:1'
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 	testCompileOnly 'org.projectlombok:lombok'

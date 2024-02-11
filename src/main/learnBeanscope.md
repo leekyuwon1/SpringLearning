@@ -8,8 +8,8 @@
 ___스프링은 다음과 같은 다양한 스코프를 지원한다.___
 * 싱글톤( Default ) : 기본 스코프, 스프링 컨테이너의 시작과 종료까지 유지되는 가장 넓은 범위의 스코프.
 * 프로토타입 : 스프링 컨테이너는 프로토타입 빈의 생성과 의존관계 주입까지만 관여하고 더는 관리하지 않는 매우 짧은 범위의 스코프.<br>
-  >**_참고_** <br>프로토타입을 사용을 언제 해야되는가? :
-javax.inject 패키지에 가보면 DL을 언제 사용하는지에 대한 예시가 Document로 작성되어 있다.
+  >**_참고_** <br>프로토타입을 사용을 언제 해야되는가? <br>
+  > javax.inject 패키지에 가보면 DL을 언제 사용하는지에 대한 예시가 Document로 작성되어 있다.<br>
   > 별도의 클래스를 직접 만들게 된다면 의존관계 주입도 직접 다 해주어야 된다. 의존관계 주입이 완료된 객체를 생성해서 받고 싶을 때 프로토타입을 사용하면 된다.
 
 * 웹 관련 스코프
@@ -81,6 +81,19 @@ javax.inject 패키지에 가보면 DL을 언제 사용하는지에 대한 예�
 > `ObjectFactory`, `ObjectProvider` 지정한 빈을 컨테이너에서 대신 찾아주는 DL 서비스를 제공한다.<br>
 > 참고로, 과거에는 `ObjectFactory`를 사용했으나, 편의기능을 추가한 `ObjectProvider` 나오게 되었다.<br>
 > 장점은 스프링이 제공하는 기능을 사용하지만, 기능이 단순하므로 단위테스트, Mock 코드를 만들기 훨씬 쉽다.<br>
+> ```java
+> static class ClientBean{
+>
+>   @Autowired
+>   private ObjectProvider<PrototypeBean> prototypeBeanProvider;
+>
+>   public int logic() {
+>   PrototypeBean prototypeBean = prototypeBeanProvider.getObject();
+>   prototypeBean.addCount();
+>   return prototypeBean.getCount();
+>   }
+> }
+> ```
 
 >**<U>_특징_</U>**
 > * **`ObjectFactory`**
@@ -92,3 +105,9 @@ javax.inject 패키지에 가보면 DL을 언제 사용하는지에 대한 예�
 >   * `Optional`, `Stream` 처리 등 편의 기능이 많다
 >   * 별도의 라이브러리 필요 없다.
 >   * 스프링에 의존
+
+**<U>_JSR-330 Provider_</U>**
+* * *
+
+JSR 은 자바 스펙 요구서(Java Specification Request, 약자 JSR) 즉, 자바표준을 뜻한다.
+이 방법의 단점은 `javax.inject:javax.inject:1` 라이브러리를 gradle에 추가해야 한다.
