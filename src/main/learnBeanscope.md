@@ -180,6 +180,48 @@ javax.inject 패키지에 가보면 DL을 언제 사용하는지에 대한 예�
 // web 라이브러리 추가
 implementation 'org.springframework.boot:spring-boot-starter-web'
 ```
+* 해당 라이브러리는 스프링 부트가 내장 톰켓 서버를 활용하여 웹 서버와 스프링을 함께 실행시킨다.
+* 웹 라이브러리가 없으면 지금까지 학습한 `AnnotationConfigApplicationContext` 을 기반으로 애플리케이션이 구동한다.
+* 웹 라이브러리가 추가되면 웹과 관련된 추가 설정과 환경들이 필요하므로 `AnnotationConfigServletWebServerApplicationContext` 를 기반으로 애플리케이션을 구동한다.
+* 만약 기본 포트인 8080 포트를 다른곳에서 사용중이라면 오류가 나므로, 포트 변경은 다음 설정을 추가.
+  * `main/resources/application.properties`
+  ```properties
+    server.port=9090
+  ```
+#### 코드 작성
+
+<details>
+<summary>MyLoger</summary>
+
+```java
+@Component
+@Scope(value = "request")
+public class MyLogger {
+
+    private String uuid;
+    private String requestURL;
+
+    public void setRequestURL(String requestURL) {
+        this.requestURL = requestURL;
+    }
+
+    public void log(String message) {
+        System.out.println("[" + uuid + "]" + "[" + requestURL + "] " + message);
+    }
+
+    @PostConstruct
+    public void init() {
+        String uuid = UUID.randomUUID().toString();
+        System.out.println("[" + uuid + "] request scope been create: " + this);
+    }
+
+    @PreDestroy
+    public void close() {
+        System.out.println("[" + uuid + "] request scope been close: " + this);
+    }
+}
+```
+</details>
 
 
 
