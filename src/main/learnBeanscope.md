@@ -223,9 +223,80 @@ public class MyLogger {
 ```
 </details>
 
+<details>
+<summary>LogDemoController</summary>
+
+```java
+@Controller
+@RequiredArgsConstructor // 생성자에 autowired가 자동으로 들어가는 애너테이션
+public class LogDemoController {
+
+    private final LogDemoService logDemoService;
+    private final MyLogger myLogger;
+
+    @RequestMapping("log-demo")
+    @ResponseBody
+    public String logDemo(HttpServletRequest request) {
+        String requestURL = request.getRequestURI().toString(); // 고객이 어떤 URL 을 선택했는지 알 수 있다.
+        myLogger.setRequestURL(requestURL);
+
+        myLogger.log("controller test");
+        logDemoService.logic("testId");
+        return "OK";
+    }
+}
+```
+</details>
 
 
+<details>
+<summary>LogDemoService</summary>
 
+```java
+@Service
+@RequiredArgsConstructor
+public class LogDemoService {
 
+    private final MyLogger myLogger;
+
+    public void logic(String id) {
+        myLogger.log("service id = " + id);
+    }
+}
+
+```
+</details>
+
+#### 기대와 결과
+기대 값은 아래와 같이 로그 확인 결과이다. 
+```
+[d06b992f...] rEquest scope bean create
+[d06b992f...] [http://localhost:8080/log-demo] controller test
+[d06b992f...] [http://localhost:8080/log-demo] service id = testId
+[d06b992f...] request scope bean close 
+```
+하지만, 결과 값은 아래와 같이 오류가 뜬다.
+```
+Caused by: org.springframework.beans.factory.support.ScopeNotActiveException: Error creating bean with name 'myLogger': Scope 'request' is not active for the current thread; consider defining a scoped proxy for this bean if you intend to refer to it from a singleton
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:373)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199)
+	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:254)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1441)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1348)
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:911)
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:789)
+	... 33 common frames omitted
+```
+해당 프로젝트가 구동될때 스프링 빈들이 컴포넌트 스캔이 되며 등록 및 의존관계 주입이 되는데, 여기서 웹스코프인 MyLogger 빈의 경우 
+HTTP request 요청이 올때 생성되는 빈이기 때문에 스프링 구동단계에서는 아직 생성을 할 수 없다. 그렇기에 해당 에러가 발생하는 것이다.
+
+정리하면, 스프링 구동 시 스프링 빈을 등록하게 되는데 `MyLogger`의 빈은 `request` 빈 스코프라 구동이 될 때 생기는 빈이 아닌 웹 요청이 있을 때 생기는 빈이라 오류가 발생. 
+
+그러면 `request` 빈을 사용하면서 스프링을 실행하는 방법은 어떤것들이 있을까?
+
+### 스코프와 Provider
+***
+
+* 앞서 학습한 Provider 를 이용하는 방법이다.
 
 
