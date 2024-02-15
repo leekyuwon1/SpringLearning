@@ -195,7 +195,7 @@ implementation 'org.springframework.boot:spring-boot-starter-web'
 
 ```java
 @Component
-@Scope(value = "request")
+@Scope(value = "request") // 값이 하나일 땐 @Scope("request")라고 해도 상관없다.
 public class MyLogger {
 
     private String uuid;
@@ -294,9 +294,66 @@ HTTP request 요청이 올때 생성되는 빈이기 때문에 스프링 구동�
 
 그러면 `request` 빈을 사용하면서 스프링을 실행하는 방법은 어떤것들이 있을까?
 
+<br>
+
 ### 스코프와 Provider
 ***
 
-* 앞서 학습한 Provider 를 이용하는 방법이다.
+앞서 학습한 Provider 를 이용하는 방법이다.
+
+<br>
+
+#### 1. ObjectProvider 적용한 코드
+
+<details>
+<summary>LogDemoController</summary>
+
+```java
+@Controller
+@RequiredArgsConstructor 
+public class LogDemoController {
+
+  private final LogDemoService logDemoService;
+  private final ObjectProvider<MyLogger> myLoggerProvider;
+
+  @RequestMapping("log-demo")
+  @ResponseBody
+  public String logDemo(HttpServletRequest request) {
+      String requestURL = request.getRequestURL().toString(); 
+
+      MyLogger myLogger = myLoggerProvider.getObject(); 
+
+      myLogger.setRequestURL(requestURL);
+
+      myLogger.log("controller test");
+      logDemoService.logic("testId");
+      return "OK";
+  }
+}
+```
+</details>
+
+<details>
+<summary>LogDemoService</summary>
+
+```java
+@Service
+@RequiredArgsConstructor
+public class LogDemoService {
+
+  private final ObjectProvider<MyLogger> myLoggerProvider;
+
+  public void logic(String id) {
+      MyLogger myLogger = myLoggerProvider.getObject();
+      myLogger.log("service id = " + id);
+  }
+}
+  ```
+</details>
 
 
+* ObjectProvider 를 이용하여 `getObject()` 를 호출하는 시점까지 request scope 빈의 생성을 지연할 수 있다.
+* `getObject()` 를 호출하는 시점에는 HTTP 요청이 진행중이므로 request scope 빈의 생성이 정상 처리된다.
+* `getObject()` 를 컨트롤러, 서비스에서 각각 호출을 하는데도 동일한 HTTP 요청일 경우 같은 스프링 빈이 반환된다. 
+
+#### 2. 프록시 활용
