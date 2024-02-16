@@ -22,7 +22,7 @@ public class LogDemoController {
         String requestURL = request.getRequestURL().toString(); // 고객이 어떤 URL 을 선택했는지 알 수 있다.
 
 //        MyLogger myLogger = myLoggerProvider.getObject(); //new
-
+        System.out.println("myLogger = " + myLogger.getClass());
         myLogger.setRequestURL(requestURL);
 
         myLogger.log("controller test");
