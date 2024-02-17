@@ -357,3 +357,5 @@ public class LogDemoService {
 * `getObject()` 를 컨트롤러, 서비스에서 각각 호출을 하는데도 동일한 HTTP 요청일 경우 같은 스프링 빈이 반환된다. 
 
 #### 2. 프록시 활용
+
+프록시란?
