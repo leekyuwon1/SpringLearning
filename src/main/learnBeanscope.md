@@ -358,4 +358,4 @@ public class LogDemoService {
 
 #### 2. 프록시 활용
 
-프록시란?
+프록시란? 단적으로
