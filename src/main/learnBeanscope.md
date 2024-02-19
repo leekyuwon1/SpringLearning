@@ -303,11 +303,12 @@ HTTP request 요청이 올때 생성되는 빈이기 때문에 스프링 구동�
 
 <br>
 
-#### 1. ObjectProvider 적용한 코드
-
 <details>
-<summary>LogDemoController</summary>
 
+<summary> 1. ObjectProvider 적용한 코드 </summary>
+<br>
+
+* LogDemoController
 ```java
 @Controller
 @RequiredArgsConstructor 
@@ -331,11 +332,9 @@ public class LogDemoController {
   }
 }
 ```
-</details>
+<br>
 
-<details>
-<summary>LogDemoService</summary>
-
+* LogDemoService
 ```java
 @Service
 @RequiredArgsConstructor
@@ -348,14 +347,28 @@ public class LogDemoService {
       myLogger.log("service id = " + id);
   }
 }
-  ```
-</details>
-
+```
 
 * ObjectProvider 를 이용하여 `getObject()` 를 호출하는 시점까지 request scope 빈의 생성을 지연할 수 있다.
 * `getObject()` 를 호출하는 시점에는 HTTP 요청이 진행중이므로 request scope 빈의 생성이 정상 처리된다.
-* `getObject()` 를 컨트롤러, 서비스에서 각각 호출을 하는데도 동일한 HTTP 요청일 경우 같은 스프링 빈이 반환된다. 
+* `getObject()` 를 컨트롤러, 서비스에서 각각 호출을 하는데도 동일한 HTTP 요청일 경우 같은 스프링 빈이 반환된다.
+</details>
 
-#### 2. 프록시 활용
+<details>
+<summary>2. 프록시 적용한 코드</summary>
 
-프록시란? 단적으로
+프록시란? <br>원본 객체를 감싸고, 다른 객체에 대한 접근을 제어한다. 그리고 호출을 중간에서 가로채는 객체를 뜻한다.
+
+```java
+@Component
+@Scope(value = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
+public class MyLogger {
+    
+}
+```
+
+* `proxyMode = ScopedProxyMode.TARGET_CLASS)` 를 추가.
+  * 적용 대상이 인터페이스가 아닌 클래스라서 `TARGET_CLASS`
+</details>
+
+
