@@ -368,7 +368,10 @@ public class MyLogger {
 ```
 
 * `proxyMode = ScopedProxyMode.TARGET_CLASS)` 를 추가.
-  * 적용 대상이 인터페이스가 아닌 클래스라서 `TARGET_CLASS`
+  * 적용 대상이 클래스일 경우 `TARGET_CLASS`
+  * 적용 대상이 인터페이스일 경우 `INTERFACES`
+* 이 클래스는 가짜 프록시 클래스를 만들고 이 가짜 프록시 클래스를 다른 빈에 미리 주입해 둘 수 있다.
+* 해당 빈( `request` )을 사용하게 될 땐 프록시 빈에서 실제 빈을 가져와 사용할 수 있도록 해준다.
 </details>
 
 
