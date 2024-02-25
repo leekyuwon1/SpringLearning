@@ -377,3 +377,17 @@ public class MyLogger {
 * 컨트롤러, 서비스의 코드를 이전상태로 돌려서 다시 실행해도 정상 작동하는것을 확인할 수 있다.
   어떻게 가능한 것인가?
 
+### 웹 스코프와 프록시 동작 원리
+
+먼저 주입된 MyLogger 를 확인하자.
+```java
+System.out.println("myLogger = " + myLogger.getClass());
+```
+출력 결과
+```
+myLogger = class hello.core.common.MyLogger$$SpringCGLIB$$0
+```
+
+* `@Scope`의 proxyMode를 설정하면 스프링 컨테이너는 `CGLIB`이라는 바이트코드 조작 라이브러리를 사용해 `MyLogger`를 상속받은 가짜 프록시 객체를 생성한다.
+* 결과는 스프링 컨테이너에는 이 프록시 객체( `MyLogger$$SpringCGLIB` )가 등록되는걸 확인할 수 있다.
+* getBean을 통해 해당 클래스 타입을 조회해도 가짜 프록시 객체가 조회되는걸 알 수 있다.
