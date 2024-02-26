@@ -391,3 +391,5 @@ myLogger = class hello.core.common.MyLogger$$SpringCGLIB$$0
 * `@Scope`의 proxyMode를 설정하면 스프링 컨테이너는 `CGLIB`이라는 바이트코드 조작 라이브러리를 사용해 `MyLogger`를 상속받은 가짜 프록시 객체를 생성한다.
 * 결과는 스프링 컨테이너에는 이 프록시 객체( `MyLogger$$SpringCGLIB` )가 등록되는걸 확인할 수 있다.
 * getBean을 통해 해당 클래스 타입을 조회해도 가짜 프록시 객체가 조회되는걸 알 수 있다.
+
+> CGLIB이라는 바이트코드 조작 라이브러리로 클래스를 상속받은 가짜 프록시 객체를 만들어 의존관계 주입. 즉, 지연로딩
